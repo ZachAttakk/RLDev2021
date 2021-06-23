@@ -5,9 +5,7 @@ RoguelikeDev Does The Complete Roguelike Tutorial Starting June 29th 2021
 
 [Tutorial post](http://rogueliketutorials.com/tutorials/tcod/)
 
-
-## Dates:
-
+### Dates:
 - **Week 1- Tues June 29th** Parts 0 & 1
 - **Week 2- Tues July 6th** Parts 2 & 3
 - **Week 3 - Tues July 13th** Parts 4 & 5
@@ -15,4 +13,4 @@ RoguelikeDev Does The Complete Roguelike Tutorial Starting June 29th 2021
 - **Week 5 - Tues July 27th** Parts 8 & 9
 - **Week 6 - Tues August 3rd** Parts 10 & 11
 - **Week 7 - Tues August 10th** Parts 12 & 13
-- **Week 8 - Tues August 17th** Share you game / Conclusion
+- **Week 8 - Tues August 17th** Share your game / Conclusion

@@ -130,5 +130,4 @@ dmypy.json
 
 
 # VS Code specific stuff
-launch.json
-settings.json
+.vscode/
