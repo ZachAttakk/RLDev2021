@@ -14,3 +14,6 @@ RoguelikeDev Does The Complete Roguelike Tutorial Starting June 29th 2021
 - **Week 6 - Tues August 3rd** Parts 10 & 11
 - **Week 7 - Tues August 10th** Parts 12 & 13
 - **Week 8 - Tues August 17th** Share your game / Conclusion
+
+### Acknowledgements:
+- ["font for libtcod based on terminal10x10_gs_ro.png"](https://www.reddit.com/r/roguelikedev/comments/57f2d1/libtcod_how_to_use_included_terminal_fonts/d8rgag4) by Juan Garza ([Larzid](https://www.reddit.com/user/Larzid/))
