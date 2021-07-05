@@ -7,7 +7,7 @@ RoguelikeDev Does The Complete Roguelike Tutorial Starting June 29th 2021
 
 ### Dates:
 - **Week 1- Tues June 29th** [Parts 0 & 1](https://github.com/ZachAttakk/RLDev2021/commit/25c621c642d615f67d57ccb2e75c0ec66492d722)
-- **Week 2- Tues July 6th** Parts 2 & 3
+- **Week 2- Tues July 6th** [Parts 2 & 3](https://github.com/ZachAttakk/RLDev2021/commit/10f705d4854b7fbe418bc8ca53d3e22f1ab561b4)
 - **Week 3 - Tues July 13th** Parts 4 & 5
 - **Week 4 - Tues July 20th** Parts 6 & 7
 - **Week 5 - Tues July 27th** Parts 8 & 9
