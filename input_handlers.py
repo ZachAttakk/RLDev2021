@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import Dict, Optional, TYPE_CHECKING
+
+import json
 
 import tcod.event
 
@@ -8,46 +10,15 @@ from actions import *
 if TYPE_CHECKING:
     from engine import Engine
 
-# TODO: At some point we need to start making settings files...
-MOVE_KEYS = {
-    # Arrow keys.
-    tcod.event.K_UP: (0, -1),
-    tcod.event.K_DOWN: (0, 1),
-    tcod.event.K_LEFT: (-1, 0),
-    tcod.event.K_RIGHT: (1, 0),
-    tcod.event.K_HOME: (-1, -1),
-    tcod.event.K_END: (-1, 1),
-    tcod.event.K_PAGEUP: (1, -1),
-    tcod.event.K_PAGEDOWN: (1, 1),
-    # Numpad keys.
-    tcod.event.K_KP_1: (-1, 1),
-    tcod.event.K_KP_2: (0, 1),
-    tcod.event.K_KP_3: (1, 1),
-    tcod.event.K_KP_4: (-1, 0),
-    tcod.event.K_KP_6: (1, 0),
-    tcod.event.K_KP_7: (-1, -1),
-    tcod.event.K_KP_8: (0, -1),
-    tcod.event.K_KP_9: (1, -1),
-    # Vi keys.
-    tcod.event.K_h: (-1, 0),
-    tcod.event.K_j: (0, 1),
-    tcod.event.K_k: (0, -1),
-    tcod.event.K_l: (1, 0),
-    tcod.event.K_y: (-1, -1),
-    tcod.event.K_u: (1, -1),
-    tcod.event.K_b: (-1, 1),
-    tcod.event.K_n: (1, 1),
-}
-WAIT_KEYS = {
-    tcod.event.K_PERIOD,
-    tcod.event.K_KP_5,
-    tcod.event.K_CLEAR,
-}
-
 
 class EventHandler(tcod.event.EventDispatch[Action]):
     def __init__(self, engine: Engine) -> None:
         self.engine = engine
+        self.read_keys(engine.config.configs)
+
+    def read_keys(self, keys: Dict):
+        """Read and process keys that should be recognised for inputs"""
+        pass
 
     def handle_events(self) -> None:
         raise NotImplementedError()
@@ -57,6 +28,20 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
 
 class MainGameEventHandler(EventHandler):
+
+    def read_keys(self, keys: Dict):
+        # For main game we need to read move keys and wait keys
+        self.MOVE_KEYS = {}
+        for k in keys["MOVE_KEYS"]:
+            if hasattr(tcod.event, k):
+                keysym = getattr(tcod.event, k)
+                keyvalue = tuple(keys["MOVE_KEYS"][k])
+                self.MOVE_KEYS[keysym] = keyvalue
+        self.WAIT_KEYS = []
+        for k in keys["WAIT_KEYS"]:
+            if hasattr(tcod.event, k):
+                keysym = getattr(tcod.event, k)
+                self.WAIT_KEYS.append(keysym)
 
     def handle_events(self) -> None:
         for event in tcod.event.wait():
@@ -76,10 +61,10 @@ class MainGameEventHandler(EventHandler):
         key = event.sym
         player = self.engine.player
 
-        if key in MOVE_KEYS:
-            dx, dy = MOVE_KEYS[key]
+        if key in self.MOVE_KEYS:
+            dx, dy = self.MOVE_KEYS[key]
             action = BumpAction(player, dx, dy)
-        elif key in WAIT_KEYS:
+        elif key in self.WAIT_KEYS:
             action = WaitAction(player)
 
         elif key == tcod.event.K_ESCAPE:

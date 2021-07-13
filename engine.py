@@ -1,4 +1,5 @@
 from __future__ import annotations
+from config import Config
 from typing import TYPE_CHECKING
 
 from game_map import GameMap
@@ -20,6 +21,7 @@ class Engine:
     game_map: GameMap
 
     def __init__(self, player: Actor) -> None:
+        self.config = Config()
         self.event_handler: EventHandler = MainGameEventHandler(self)
         self.player = player
 
