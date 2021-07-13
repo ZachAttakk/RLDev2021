@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 import copy
-from input_handlers import EventHandler
 from procgen import generate_dungeon
 import tcod
-from numpy import floor
 
 from engine import Engine
 import entity_factories
@@ -26,18 +24,17 @@ def main():
         "generic_rl_fnt.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
 
-    event_handler = EventHandler()
-
     # init player
     player = copy.deepcopy(entity_factories.player)
 
-    # init map
-    game_map = generate_dungeon(
-        max_rooms, room_min_size, room_max_size, max_monsters_per_room, map_width, map_height, player)
-
     # init engine
-    engine = Engine(event_handler=event_handler,
-                    game_map=game_map, player=player)
+    engine = Engine(player=player)
+
+    # init map
+    engine.game_map = generate_dungeon(
+        max_rooms, room_min_size, room_max_size, max_monsters_per_room, map_width, map_height, engine=engine)
+
+    engine.update_fov()
 
     # The context is the window that you actually see
     # The console is the internal buffer that holds the next frame of the game
@@ -48,8 +45,7 @@ def main():
         # MAIN LOOP
         while True:
             engine.render(console=root_console, context=context)
-            events = tcod.event.wait()
-            engine.handle_events(events)
+            engine.event_handler.handle_events()
 
 
 if __name__ == '__main__':

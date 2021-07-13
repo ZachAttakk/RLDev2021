@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Iterator, TYPE_CHECKING, Tuple, List
 import random
-from numpy import number
 
 import tcod
 
@@ -11,7 +10,7 @@ from game_map import GameMap
 import tile_types
 
 if TYPE_CHECKING:
-    from entity import Entity
+    from engine import Engine
 
 
 class RectangularRoom:
@@ -34,22 +33,27 @@ class RectangularRoom:
         return(self.x1 <= other.x2 and self.x2 >= other.x1 and self.y1 <= other.y2 and self.y2 >= other.y1)
 
 
-def generate_dungeon(max_rooms: int, room_min_size: int, room_max_size: int, max_monsters_per_room: int, map_width: int, map_height: int, player: Entity) -> GameMap:
+def generate_dungeon(max_rooms: int, room_min_size: int, room_max_size: int, max_monsters_per_room: int, map_width: int, map_height: int, engine: Engine) -> GameMap:
     """We make it a dungeon of rectangular rooms connected by paths
 
     Args:
-        max_rooms (int): [description]
-        room_min_size (int): [description]
-        room_max_size (int): [description]
-        max_monsters_per_room (int): [description]
-        map_width (int): [description]
-        map_height (int): [description]
-        player (Entity): [description]
+        max_rooms (int): Max number of rooms to generate
+        room_min_size (int): Smallest room in either dimension
+        room_max_size (int): Largest room in either dimension
+        max_monsters_per_room (int): Max number of monsters per room
+        map_width (int): Map how big X
+        map_height (int): Map how big Y
+        engine (Engine): Reference to engine for map to use
 
     Returns:
         GameMap: Game map containing rooms and the player
     """
-    dungeon = GameMap(map_width, map_height, entities=[player])
+
+    # Grab player reference from engine
+    player = engine.player
+
+    # Init map
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
     rooms: List[RectangularRoom] = []
 
@@ -71,7 +75,7 @@ def generate_dungeon(max_rooms: int, room_min_size: int, room_max_size: int, max
 
         if len(rooms) == 0:
             # First room is where the player starts
-            player.x, player.y = new_room.center
+            player.place(*new_room.center, dungeon)
         else:
             # room needs a tunnel
             for x, y in tunnel_between(rooms[-1].center, new_room.center):

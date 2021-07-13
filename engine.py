@@ -1,39 +1,33 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from game_map import GameMap
-from typing import Iterable, Any
 
 from tcod.context import Context
 from tcod.console import Console
 from tcod.map import compute_fov
 
-from entity import Entity
-from game_map import GameMap
-from input_handlers import EventHandler
+
+from input_handlers import EventHandler, MainGameEventHandler
+
+if TYPE_CHECKING:
+    from entity import Actor
+    from game_map import GameMap
 
 
 class Engine:
     """go brrrrrr"""
+    game_map: GameMap
 
-    def __init__(self, event_handler: EventHandler, game_map: GameMap, player: Entity) -> None:
-        self.event_handler = event_handler
-        self.game_map = game_map
+    def __init__(self, player: Actor) -> None:
+        self.event_handler: EventHandler = MainGameEventHandler(self)
         self.player = player
-        self.update_fov()
-
-    def handle_events(self, events: Iterable[Any]) -> None:
-        for event in events:
-            action = self.event_handler.dispatch(event)
-
-            if action is not None:
-                # It's me doing the action because we're responding to events
-                action.perform(self, self.player)
-                # Let the enemies act
-                self.handle_enemy_turns()
-                # Update FOV in case something changed
-                self.update_fov()
 
     def handle_enemy_turns(self) -> None:
-        for entity in self.game_map.entities - {self.player}:  # All entities in list except player
-            print(f"The {entity.name} waits.")
+        # All entities in list except player
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                entity.ai.perform()
 
     def update_fov(self) -> None:
         """Recompute the visible area based on the player's point of view.
@@ -49,6 +43,11 @@ class Engine:
     def render(self, console: Console, context: Context) -> None:
         # Draw map
         self.game_map.render(console)
+
+        # Draw User Interface
+        console.print(
+            x=1, y=47,
+            string=f"{self.player.fighter.hp}/{self.player.fighter.max_hp}",)
 
         # dump the console (buffer) to the screen (context)
         context.present(console)
