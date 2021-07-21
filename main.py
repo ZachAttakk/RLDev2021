@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 import copy
+
+from tcod import console
 from procgen import generate_dungeon
 import tcod
 
 from engine import Engine
 import entity_factories
+import color
 
 
 def main():
@@ -12,7 +15,7 @@ def main():
     screen_height: int = 50
 
     map_width: int = 80
-    map_height: int = 45
+    map_height: int = 43
 
     room_max_size = 10
     room_min_size = 6
@@ -36,6 +39,10 @@ def main():
 
     engine.update_fov()
 
+    # Welcome message!
+    engine.message_log.add_message(
+        "Hello and welcome to yet another dungeon!", color.welcome_text)
+
     # The context is the window that you actually see
     # The console is the internal buffer that holds the next frame of the game
     with tcod.context.new_terminal(
@@ -44,8 +51,11 @@ def main():
 
         # MAIN LOOP
         while True:
-            engine.render(console=root_console, context=context)
-            engine.event_handler.handle_events()
+            root_console.clear()
+            engine.event_handler.on_render(console=root_console)
+            context.present(root_console)
+
+            engine.event_handler.handle_events(context)
 
 
 if __name__ == '__main__':

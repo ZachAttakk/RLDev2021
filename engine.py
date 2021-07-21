@@ -1,10 +1,11 @@
 from __future__ import annotations
 from config import Config
-from typing import TYPE_CHECKING
+from render_functions import render_bar, render_names_at_mouse
+from message_log import MessageLog
+from typing import Tuple, TYPE_CHECKING
 
 from game_map import GameMap
 
-from tcod.context import Context
 from tcod.console import Console
 from tcod.map import compute_fov
 
@@ -23,6 +24,8 @@ class Engine:
     def __init__(self, player: Actor) -> None:
         self.config = Config()
         self.event_handler: EventHandler = MainGameEventHandler(self)
+        self.message_log = MessageLog()
+        self.mouse_location: Tuple[int, int] = 0, 0
         self.player = player
 
     def handle_enemy_turns(self) -> None:
@@ -42,16 +45,15 @@ class Engine:
         # If it's in that result, it needs to be added to "explored"
         self.game_map.explored |= self.game_map.visible
 
-    def render(self, console: Console, context: Context) -> None:
+    def render(self, console: Console) -> None:
         # Draw map
         self.game_map.render(console)
 
         # Draw User Interface
-        console.print(
-            x=1, y=47,
-            string=f"{self.player.fighter.hp}/{self.player.fighter.max_hp}",)
+        render_bar(console=console, current_val=self.player.fighter.hp,
+                   max_val=self.player.fighter.max_hp, total_width=20,)
 
-        # dump the console (buffer) to the screen (context)
-        context.present(console)
-        # clear the console so the next frame starts on a blank screen
-        console.clear()
+        render_names_at_mouse(console=console, x=21, y=44, engine=self)
+
+        # Draw message log
+        self.message_log.render(console, x=21, y=45, width=40, height=5)
